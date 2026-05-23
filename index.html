@@ -3,9 +3,9 @@
 
 <!-- Conteúdo Principal --> <div id="mainApp" class="w-full max-w-2xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden mb-10"> <header class="bg-indigo-600 text-white p-5 text-center"> <h1 class="text-xl font-bold">Calculadora de Vendas</h1> <p id="headerDate" class="text-xs opacity-80"></p> </header>
 
-<main class="p-5 space-y-6"> <!-- Dados da Empresa, Vendedor e Cliente --> <div class="grid grid-cols-1 md:grid-cols-2 gap-4"> <div class="space-y-3"> <h3 class="font-semibold text-gray-700 border-b pb-2">🏢 Dados da Empresa</h3> <input type="text" id="empresaNome" placeholder="Nome da Empresa" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-global outline-none"> <input type="text" id="empresaEndereco" placeholder="Endereço da Empresa" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-global outline-none"> <input type="text" id="empresaDoc" placeholder="CNPJ" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-global outline-none"> <input type="text" id="empresaTelefone" placeholder="Telefone" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-global outline-none"> </div> <div class="space-y-3"> <h3 class="font-semibold text-gray-700 border-b pb-2">👤 Dados do Vendedor</h3> <input type="text" id="vendedorNome" placeholder="Nome do Vendedor" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-global outline-none"> <input type="text" id="vendedorDoc" placeholder="CPF ou Registro" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-global outline-none"> <input type="text" id="vendedorTelefone" placeholder="Telefone" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-global outline-none"> </div> </div>
+<main class="p-5 space-y-6"> <!-- Dados do Vendedor e Cliente --> <div class="grid grid-cols-1 md:grid-cols-2 gap-4"> <div class="space-y-3"> <h3 class="font-semibold text-gray-700 border-b pb-2">👤 Dados do Vendedor</h3> <input type="text" id="vendedorNome" placeholder="Nome do Vendedor" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-global outline-none"> <input type="text" id="vendedorDoc" placeholder="CPF ou Registro" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-global outline-none"> <input type="text" id="vendedorTelefone" placeholder="Telefone" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-global outline-none"> </div> <div class="space-y-3"> <h3 class="font-semibold text-gray-700 border-b pb-2">👥 Dados do Cliente</h3> <input type="text" id="clienteNome" placeholder="Nome do Cliente" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-global outline-none"> <input type="text" id="clienteDoc" placeholder="CPF ou CNPJ" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-global outline-none"> <input type="text" id="clienteEndereco" placeholder="Endereço" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-global outline-none"> <input type="text" id="clienteTelefone" placeholder="Telefone" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-global outline-none"> </div> </div>
 
-<!-- Dados do Cliente --> <div class="grid grid-cols-1 md:grid-cols-2 gap-4"> <div class="space-y-3"> <h3 class="font-semibold text-gray-700 border-b pb-2">👥 Dados do Cliente</h3> <input type="text" id="clienteNome" placeholder="Nome do Cliente" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-global outline-none"> <input type="text" id="clienteDoc" placeholder="CPF ou CNPJ" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-global outline-none"> <input type="text" id="clienteEndereco" placeholder="Endereço" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-global outline-none"> <input type="text" id="clienteTelefone" placeholder="Telefone" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-global outline-none"> </div> <div class="space-y-3"> <h3 class="font-semibold text-gray-700 border-b pb-2">📝 Informações Adicionais</h3> <textarea id="observacoes" rows="3" placeholder="Observações da venda (opcional)" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-global outline-none resize-none"></textarea> </div> </div>
+<!-- Informações Adicionais --> <div class="space-y-3"> <h3 class="font-semibold text-gray-700 border-b pb-2">📝 Informações Adicionais</h3> <textarea id="observacoes" rows="3" placeholder="Observações da venda (opcional)" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-global outline-none resize-none"></textarea> </div>
 
 <!-- ADICIONAR ITENS --> <div class="space-y-4"> <h3 class="font-semibold text-gray-700 text-lg">🛒 Adicionar Itens</h3> <div class="relative"> <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xl">R$</span> <input type="number" id="novoValor" step="0.01" placeholder="0,00" class="w-full pl-14 pr-4 py-4 text-2xl text-center border border-gray-300 rounded-xl input-global outline-none"> </div> <button onclick="adicionarItem()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl text-lg transition-all flex items-center justify-center gap-2 shadow-md"> <span>➕</span> Adicionar à Lista </button> <div> <h4 class="text-gray-600 font-medium mb-2">Itens da Venda:</h4> <div id="itemsList" class="space-y-2 max-h-80 overflow-y-auto pr-1"></div> </div> </div>
 
@@ -113,12 +113,6 @@ async function gerarPDFBlob() {
     const troco = recebido - totalGeral;
     const tipoPagamento = document.getElementById('tipoPagamento').value;
     
-    // Dados da empresa
-    const empresaNome = document.getElementById('empresaNome').value || 'Não informado';
-    const empresaEndereco = document.getElementById('empresaEndereco').value || 'Não informado';
-    const empresaDoc = document.getElementById('empresaDoc').value || 'Não informado';
-    const empresaTelefone = document.getElementById('empresaTelefone').value || 'Não informado';
-    
     // Dados do vendedor
     const vendedorNome = document.getElementById('vendedorNome').value || 'Não informado';
     const vendedorDoc = document.getElementById('vendedorDoc').value || 'Não informado';
@@ -144,23 +138,6 @@ async function gerarPDFBlob() {
     pdf.text(`${dataStr} - ${horaStr}`, 105, 28, null, null, "center");
     
     let posY = 40;
-    
-    // --- INFORMAÇÕES DA EMPRESA ---
-    pdf.setFontSize(11);
-    pdf.setTextColor(0, 0, 0);
-    pdf.setFont("helvetica", "bold");
-    pdf.text("DADOS DA EMPRESA", 20, posY);
-    posY += 5;
-    pdf.setFontSize(9);
-    pdf.setFont("helvetica", "normal");
-    pdf.text(`Nome: ${empresaNome}`, 20, posY);
-    posY += 4;
-    pdf.text(`Endereço: ${empresaEndereco}`, 20, posY);
-    posY += 4;
-    pdf.text(`CNPJ: ${empresaDoc}`, 20, posY);
-    posY += 4;
-    pdf.text(`Telefone: ${empresaTelefone}`, 20, posY);
-    posY += 6;
     
     // --- INFORMAÇÕES DO VENDEDOR ---
     pdf.setFontSize(11);
@@ -301,7 +278,7 @@ async function enviarWhatsApp() {
             const numeroCompleto = numeroWhatsApp.length === 11 ? `55${numeroWhatsApp}` : numeroWhatsApp;
             
             // Criar mensagem de texto
-            let mensagem = `*🍕 NOTA DE VENDA - ${document.getElementById('empresaNome').value || 'Empresa'}*\n\n`;
+            let mensagem = `*🍕 NOTA DE VENDA*\n\n`;
             mensagem += `*Cliente:* ${document.getElementById('clienteNome').value || 'Não informado'}\n`;
             mensagem += `*Vendedor:* ${document.getElementById('vendedorNome').value || 'Não informado'}\n`;
             mensagem += `*Data:* ${new Date().toLocaleString('pt-BR')}\n\n`;
