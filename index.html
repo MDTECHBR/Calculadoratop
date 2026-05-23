@@ -1,512 +1,334 @@
+<!DOCTYPE html><html lang="pt-BR"><head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>Calculadora Empreendedor</title> <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script> <script src="https://cdn.tailwindcss.com"></script> <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet"> <style> body { font-family: 'Inter', sans-serif; } .input-global:focus, .select-global:focus { border-color: #4F46E5; box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2); } @keyframes fadeOut { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-20px); } } .toast-notification { animation: fadeOut 3s ease forwards; } </style></head><body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+<!-- Toast de notificação --> <div id="toast" class="fixed top-5 right-5 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg hidden z-50 transition-all"> <span id="toastMessage"></span> </div>
 
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora Empreendedor</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Inter', sans-serif; }
-        .input-global:focus, .select-global:focus { 
-            border-color: #4F46E5; 
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2); 
-        }
-        @keyframes fadeOut {
-            from { opacity: 1; transform: translateY(0); }
-            to { opacity: 0; transform: translateY(-20px); }
-        }
-        .toast-notification {
-            animation: fadeOut 3s ease forwards;
-        }
-    </style>
-</head>
-<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+<!-- Conteúdo Principal --> <div id="mainApp" class="w-full max-w-2xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden mb-10"> <header class="bg-indigo-600 text-white p-5 text-center"> <h1 class="text-xl font-bold">Calculadora de Vendas</h1> <p id="headerDate" class="text-xs opacity-80"></p> </header>
 
-    <!-- Toast de notificação -->
-    <div id="toast" class="fixed top-5 right-5 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg hidden z-50 transition-all">
-        <span id="toastMessage"></span>
-    </div>
+<main class="p-5 space-y-6"> <!-- Dados da Empresa, Vendedor e Cliente --> <div class="grid grid-cols-1 md:grid-cols-2 gap-4"> <div class="space-y-3"> <h3 class="font-semibold text-gray-700 border-b pb-2">🏢 Dados da Empresa</h3> <input type="text" id="empresaNome" placeholder="Nome da Empresa" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-global outline-none"> <input type="text" id="empresaEndereco" placeholder="Endereço da Empresa" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-global outline-none"> <input type="text" id="empresaDoc" placeholder="CNPJ" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-global outline-none"> <input type="text" id="empresaTelefone" placeholder="Telefone" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-global outline-none"> </div> <div class="space-y-3"> <h3 class="font-semibold text-gray-700 border-b pb-2">👤 Dados do Vendedor</h3> <input type="text" id="vendedorNome" placeholder="Nome do Vendedor" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-global outline-none"> <input type="text" id="vendedorDoc" placeholder="CPF ou Registro" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-global outline-none"> <input type="text" id="vendedorTelefone" placeholder="Telefone" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-global outline-none"> </div> </div>
 
-    <!-- Tela de Login -->
-    <div id="loginScreen" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
-        <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-sm">
-            <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">🔐 Acesso Restrito</h2>
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Administrador</label>
-                    <input type="text" id="adminUser" value="admin" class="w-full px-4 py-3 border border-gray-300 rounded-xl input-global outline-none transition-all bg-gray-100" readonly>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Senha</label>
-                    <input type="password" id="adminPass" placeholder="Digite a senha" maxlength="4" class="w-full px-4 py-3 border border-gray-300 rounded-xl input-global outline-none transition-all">
-                </div>
-                <button onclick="checkLogin()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-xl transition-all transform hover:scale-[1.02]">
-                    Entrar
-                </button>
-                <p id="loginError" class="text-red-500 text-sm text-center hidden">Senha incorreta!</p>
-            </div>
+<!-- Dados do Cliente --> <div class="grid grid-cols-1 md:grid-cols-2 gap-4"> <div class="space-y-3"> <h3 class="font-semibold text-gray-700 border-b pb-2">👥 Dados do Cliente</h3> <input type="text" id="clienteNome" placeholder="Nome do Cliente" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-global outline-none"> <input type="text" id="clienteDoc" placeholder="CPF ou CNPJ" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-global outline-none"> <input type="text" id="clienteEndereco" placeholder="Endereço" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-global outline-none"> <input type="text" id="clienteTelefone" placeholder="Telefone" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-global outline-none"> </div> <div class="space-y-3"> <h3 class="font-semibold text-gray-700 border-b pb-2">📝 Informações Adicionais</h3> <textarea id="observacoes" rows="3" placeholder="Observações da venda (opcional)" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-global outline-none resize-none"></textarea> </div> </div>
+
+<!-- ADICIONAR ITENS --> <div class="space-y-4"> <h3 class="font-semibold text-gray-700 text-lg">🛒 Adicionar Itens</h3> <div class="relative"> <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xl">R$</span> <input type="number" id="novoValor" step="0.01" placeholder="0,00" class="w-full pl-14 pr-4 py-4 text-2xl text-center border border-gray-300 rounded-xl input-global outline-none"> </div> <button onclick="adicionarItem()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl text-lg transition-all flex items-center justify-center gap-2 shadow-md"> <span>➕</span> Adicionar à Lista </button> <div> <h4 class="text-gray-600 font-medium mb-2">Itens da Venda:</h4> <div id="itemsList" class="space-y-2 max-h-80 overflow-y-auto pr-1"></div> </div> </div>
+
+<!-- Valores --> <div class="bg-gray-50 p-5 rounded-xl border"> <div class="text-center"> <p class="text-gray-500 text-lg">Total a Pagar:</p> <p id="valorTotal" class="text-4xl font-bold text-green-600">R$ 0,00</p> </div> </div>
+
+<!-- Recebimento --> <div class="space-y-4"> <h3 class="font-semibold text-gray-700 text-lg">💵 Recebimento</h3> <div class="relative"> <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">R$</span> <input type="number" id="valorRecebido" step="0.01" placeholder="Valor recebido do cliente" class="w-full pl-14 pr-4 py-4 border border-gray-300 rounded-xl input-global outline-none"> </div> <button onclick="calcularTroco()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 rounded-xl text-lg transition-all flex items-center justify-center gap-2 shadow-md"> <span>💰</span> Calcular Troco </button> <div class="text-center bg-gray-50 p-4 rounded-xl"> <p class="text-gray-500">Troco:</p> <p id="valorTroco" class="text-3xl font-bold text-red-600">R$ 0,00</p> </div> </div>
+
+<!-- Selecionar Tipo de Pagamento --> <div class="space-y-3"> <h3 class="font-semibold text-gray-700 text-lg">💳 Pagamento</h3> <select id="tipoPagamento" class="w-full px-4 py-3 border border-gray-300 rounded-xl input-global outline-none bg-white"> <option value="Dinheiro">💰 Dinheiro</option> <option value="Cartão de Crédito">💳 Cartão de Crédito</option> <option value="Cartão de Débito">💳 Cartão de Débito</option> <option value="PIX">📱 PIX</option> <option value="Transferência Bancária">🏦 Transferência Bancária</option> <option value="Boleto">📄 Boleto</option> </select> </div> <!-- Botões de Ação --> <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6"> <button onclick="generatePDF()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-xl text-lg transition-all shadow-lg flex items-center justify-center gap-2"> <span>🖨️</span> Salvar PDF </button> <button onclick="enviarWhatsApp()" class="bg-green-600 hover:bg-green-700 text-white font-bold py-4 rounded-xl text-lg transition-all shadow-lg flex items-center justify-center gap-2"> <span>📱</span> Enviar WhatsApp </button> </div> <!-- Frase Volte Sempre --> <p class="text-center text-gray-600 text-lg mt-4">Volte sempre !</p> </main> <!-- Rodapé --> <footer class="bg-gray-100 p-3 text-center text-[10px] text-gray-500"> Processamento 100% local - suas informações nunca saem do seu navegador </footer> </div>
+
+<script> let itemCount = 0; let totalGeral = 0; let itensVenda = []; let pdfBlob = null; // Para armazenar o PDF gerado
+
+// Função para mostrar notificação
+function showToast(message, isError = false) {
+    const toast = document.getElementById('toast');
+    const toastMessage = document.getElementById('toastMessage');
+    toastMessage.textContent = message;
+    toast.classList.remove('hidden', 'bg-green-500', 'bg-red-500');
+    toast.classList.add(isError ? 'bg-red-500' : 'bg-green-500');
+    toast.style.display = 'block';
+    setTimeout(() => {
+        toast.classList.add('hidden');
+        toast.style.display = 'none';
+    }, 3000);
+}
+
+// Inicialização do APP
+function initApp() {
+    setCurrentDateTime();
+}
+
+function setCurrentDateTime() {
+    const now = new Date();
+    const options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+    const dateStr = now.toLocaleString('pt-BR', options);
+    document.getElementById('headerDate').innerText = dateStr;
+}
+
+function formatCurrency(value) {
+    return value.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+// Função principal de adicionar item
+function adicionarItem() {
+    const inputValor = document.getElementById('novoValor');
+    const valor = parseFloat(inputValor.value);
+    
+    if(isNaN(valor) || valor <= 0) {
+        showToast('Digite um valor válido!', true);
+        return;
+    }
+    
+    itemCount++;
+    totalGeral += valor;
+    itensVenda.push({ id: itemCount, valor: valor });
+    
+    // Criar o elemento na lista
+    const lista = document.getElementById('itemsList');
+    const itemDiv = document.createElement('div');
+    itemDiv.className = "flex justify-between items-center bg-white border border-gray-200 rounded-lg p-4 shadow-sm";
+    itemDiv.id = `item-${itemCount}`;
+    itemDiv.innerHTML = `
+        <span class="font-medium text-gray-700">Item ${itemCount}</span>
+        <div class="flex items-center gap-4">
+            <span class="font-bold text-lg">R$ ${formatCurrency(valor)}</span>
+            <button onclick="removerItem(${itemCount}, ${valor})" class="bg-red-100 hover:bg-red-200 text-red-600 w-8 h-8 flex items-center justify-center rounded-full font-bold text-xl">✕</button>
         </div>
-    </div>
+    `;
+    lista.appendChild(itemDiv);
+    
+    document.getElementById('valorTotal').innerText = "R$ " + formatCurrency(totalGeral);
+    inputValor.value = "";
+    inputValor.focus();
+}
 
-    <!-- Conteúdo Principal -->
-    <div id="mainApp" class="w-full max-w-2xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden mb-10 hidden">
-        <header class="bg-indigo-600 text-white p-5 text-center">
-            <h1 class="text-xl font-bold">Calculadora de Vendas</h1>
-            <p id="headerDate" class="text-xs opacity-80"></p>
-        </header>
+// Permitir adicionar com a tecla Enter
+document.getElementById('novoValor')?.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') adicionarItem();
+});
 
-        <main class="p-5 space-y-6">
-            <!-- Dados da Empresa, Vendedor e Cliente -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="space-y-3">
-                    <h3 class="font-semibold text-gray-700 border-b pb-2">🏢 Dados da Empresa</h3>
-                    <input type="text" id="empresaNome" placeholder="Nome da Empresa" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-global outline-none">
-                    <input type="text" id="empresaEndereco" placeholder="Endereço da Empresa" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-global outline-none">
-                    <input type="text" id="empresaDoc" placeholder="CNPJ" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-global outline-none">
-                    <input type="text" id="empresaTelefone" placeholder="Telefone" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-global outline-none">
-                </div>
-                <div class="space-y-3">
-                    <h3 class="font-semibold text-gray-700 border-b pb-2">👤 Dados do Vendedor</h3>
-                    <input type="text" id="vendedorNome" placeholder="Nome do Vendedor" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-global outline-none">
-                    <input type="text" id="vendedorDoc" placeholder="CPF ou Registro" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-global outline-none">
-                    <input type="text" id="vendedorTelefone" placeholder="Telefone" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-global outline-none">
-                </div>
-            </div>
+function removerItem(id, valor) {
+    const itemElement = document.getElementById(`item-${id}`);
+    if(itemElement) itemElement.remove();
+    totalGeral -= valor;
+    itensVenda = itensVenda.filter(item => item.id !== id);
+    document.getElementById('valorTotal').innerText = "R$ " + formatCurrency(totalGeral);
+    calcularTroco();
+}
 
-            <!-- Dados do Cliente -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="space-y-3">
-                    <h3 class="font-semibold text-gray-700 border-b pb-2">👥 Dados do Cliente</h3>
-                    <input type="text" id="clienteNome" placeholder="Nome do Cliente" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-global outline-none">
-                    <input type="text" id="clienteDoc" placeholder="CPF ou CNPJ" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-global outline-none">
-                    <input type="text" id="clienteEndereco" placeholder="Endereço" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-global outline-none">
-                    <input type="text" id="clienteTelefone" placeholder="Telefone" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-global outline-none">
-                </div>
-                <div class="space-y-3">
-                    <h3 class="font-semibold text-gray-700 border-b pb-2">📝 Informações Adicionais</h3>
-                    <textarea id="observacoes" rows="3" placeholder="Observações da venda (opcional)" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-global outline-none resize-none"></textarea>
-                </div>
-            </div>
+function calcularTroco() {
+    const recebido = parseFloat(document.getElementById('valorRecebido').value) || 0;
+    const troco = recebido - totalGeral;
+    document.getElementById('valorTroco').innerText = "R$ " + formatCurrency(troco >= 0 ? troco : 0);
+}
 
-            <!-- ADICIONAR ITENS -->
-            <div class="space-y-4">
-                <h3 class="font-semibold text-gray-700 text-lg">🛒 Adicionar Itens</h3>
-                <div class="relative">
-                    <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xl">R$</span>
-                    <input type="number" id="novoValor" step="0.01" placeholder="0,00" class="w-full pl-14 pr-4 py-4 text-2xl text-center border border-gray-300 rounded-xl input-global outline-none">
-                </div>
-                
-                <button onclick="adicionarItem()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl text-lg transition-all flex items-center justify-center gap-2 shadow-md">
-                    <span>➕</span> Adicionar à Lista
-                </button>
-                
-                <div>
-                    <h4 class="text-gray-600 font-medium mb-2">Itens da Venda:</h4>
-                    <div id="itemsList" class="space-y-2 max-h-80 overflow-y-auto pr-1"></div>
-                </div>
-            </div>
-
-            <!-- Valores -->
-            <div class="bg-gray-50 p-5 rounded-xl border">
-                <div class="text-center">
-                    <p class="text-gray-500 text-lg">Total a Pagar:</p>
-                    <p id="valorTotal" class="text-4xl font-bold text-green-600">R$ 0,00</p>
-                </div>
-            </div>
-
-            <!-- Recebimento -->
-            <div class="space-y-4">
-                <h3 class="font-semibold text-gray-700 text-lg">💵 Recebimento</h3>
-                <div class="relative">
-                    <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">R$</span>
-                    <input type="number" id="valorRecebido" step="0.01" placeholder="Valor recebido do cliente" class="w-full pl-14 pr-4 py-4 border border-gray-300 rounded-xl input-global outline-none">
-                </div>
-                
-                <button onclick="calcularTroco()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 rounded-xl text-lg transition-all flex items-center justify-center gap-2 shadow-md">
-                    <span>💰</span> Calcular Troco
-                </button>
-                
-                <div class="text-center bg-gray-50 p-4 rounded-xl">
-                    <p class="text-gray-500">Troco:</p>
-                    <p id="valorTroco" class="text-3xl font-bold text-red-600">R$ 0,00</p>
-                </div>
-            </div>
-
-            <!-- Selecionar Tipo de Pagamento -->
-            <div class="space-y-3">
-                <h3 class="font-semibold text-gray-700 text-lg">💳 Pagamento</h3>
-                <select id="tipoPagamento" class="w-full px-4 py-3 border border-gray-300 rounded-xl input-global outline-none bg-white">
-                    <option value="Dinheiro">💰 Dinheiro</option>
-                    <option value="Cartão de Crédito">💳 Cartão de Crédito</option>
-                    <option value="Cartão de Débito">💳 Cartão de Débito</option>
-                    <option value="PIX">📱 PIX</option>
-                    <option value="Transferência Bancária">🏦 Transferência Bancária</option>
-                    <option value="Boleto">📄 Boleto</option>
-                </select>
-            </div>
-            
-            <!-- Botões de Ação -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
-                <button onclick="generatePDF()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-xl text-lg transition-all shadow-lg flex items-center justify-center gap-2">
-                    <span>🖨️</span> Salvar PDF
-                </button>
-                <button onclick="enviarWhatsApp()" class="bg-green-600 hover:bg-green-700 text-white font-bold py-4 rounded-xl text-lg transition-all shadow-lg flex items-center justify-center gap-2">
-                    <span>📱</span> Enviar WhatsApp
-                </button>
-            </div>
-            
-            <!-- Frase Volte Sempre -->
-            <p class="text-center text-gray-600 text-lg mt-4">Volte sempre !</p>
-        </main>
-        
-        <!-- Rodapé -->
-        <footer class="bg-gray-100 p-3 text-center text-[10px] text-gray-500">
-            Processamento 100% local - suas informações nunca saem do seu navegador
-        </footer>
-    </div>
-
-    <script>
-        const CORRECT_PASSWORD = "1240";
-        let itemCount = 0;
-        let totalGeral = 0;
-        let itensVenda = [];
-        let pdfBlob = null; // Para armazenar o PDF gerado
-        
-        // Função para mostrar notificação
-        function showToast(message, isError = false) {
-            const toast = document.getElementById('toast');
-            const toastMessage = document.getElementById('toastMessage');
-            toastMessage.textContent = message;
-            toast.classList.remove('hidden', 'bg-green-500', 'bg-red-500');
-            toast.classList.add(isError ? 'bg-red-500' : 'bg-green-500');
-            toast.style.display = 'block';
-            
-            setTimeout(() => {
-                toast.classList.add('hidden');
-                toast.style.display = 'none';
-            }, 3000);
+// Função para gerar o PDF e retornar o blob
+async function gerarPDFBlob() {
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
+    
+    // Obter dados atuais
+    const dataAtual = new Date();
+    const dataStr = dataAtual.toLocaleDateString('pt-BR');
+    const horaStr = dataAtual.toLocaleTimeString('pt-BR');
+    const recebido = parseFloat(document.getElementById('valorRecebido').value) || 0;
+    const troco = recebido - totalGeral;
+    const tipoPagamento = document.getElementById('tipoPagamento').value;
+    
+    // Dados da empresa
+    const empresaNome = document.getElementById('empresaNome').value || 'Não informado';
+    const empresaEndereco = document.getElementById('empresaEndereco').value || 'Não informado';
+    const empresaDoc = document.getElementById('empresaDoc').value || 'Não informado';
+    const empresaTelefone = document.getElementById('empresaTelefone').value || 'Não informado';
+    
+    // Dados do vendedor
+    const vendedorNome = document.getElementById('vendedorNome').value || 'Não informado';
+    const vendedorDoc = document.getElementById('vendedorDoc').value || 'Não informado';
+    const vendedorTelefone = document.getElementById('vendedorTelefone').value || 'Não informado';
+    
+    // Dados do cliente
+    const clienteNome = document.getElementById('clienteNome').value || 'Não informado';
+    const clienteDoc = document.getElementById('clienteDoc').value || 'Não informado';
+    const clienteEndereco = document.getElementById('clienteEndereco').value || 'Não informado';
+    const clienteTelefone = document.getElementById('clienteTelefone').value || 'Não informado';
+    
+    // Observações
+    const observacoes = document.getElementById('observacoes').value || 'Nenhuma observação';
+    
+    // --- CABEÇALHO ---
+    pdf.setFontSize(20);
+    pdf.setTextColor(0, 100, 200);
+    pdf.setFont("helvetica", "bold");
+    pdf.text("EXTRATO DE VENDA", 105, 20, null, null, "center");
+    pdf.setFontSize(9);
+    pdf.setTextColor(80, 80, 80);
+    pdf.setFont("helvetica", "normal");
+    pdf.text(`${dataStr} - ${horaStr}`, 105, 28, null, null, "center");
+    
+    let posY = 40;
+    
+    // --- INFORMAÇÕES DA EMPRESA ---
+    pdf.setFontSize(11);
+    pdf.setTextColor(0, 0, 0);
+    pdf.setFont("helvetica", "bold");
+    pdf.text("DADOS DA EMPRESA", 20, posY);
+    posY += 5;
+    pdf.setFontSize(9);
+    pdf.setFont("helvetica", "normal");
+    pdf.text(`Nome: ${empresaNome}`, 20, posY);
+    posY += 4;
+    pdf.text(`Endereço: ${empresaEndereco}`, 20, posY);
+    posY += 4;
+    pdf.text(`CNPJ: ${empresaDoc}`, 20, posY);
+    posY += 4;
+    pdf.text(`Telefone: ${empresaTelefone}`, 20, posY);
+    posY += 6;
+    
+    // --- INFORMAÇÕES DO VENDEDOR ---
+    pdf.setFontSize(11);
+    pdf.setFont("helvetica", "bold");
+    pdf.text("DADOS DO VENDEDOR", 20, posY);
+    posY += 5;
+    pdf.setFontSize(9);
+    pdf.setFont("helvetica", "normal");
+    pdf.text(`Nome: ${vendedorNome}`, 20, posY);
+    posY += 4;
+    pdf.text(`Registro: ${vendedorDoc}`, 20, posY);
+    posY += 4;
+    pdf.text(`Telefone: ${vendedorTelefone}`, 20, posY);
+    posY += 6;
+    
+    // --- INFORMAÇÕES DO CLIENTE ---
+    pdf.setFontSize(11);
+    pdf.setFont("helvetica", "bold");
+    pdf.text("DADOS DO CLIENTE", 20, posY);
+    posY += 5;
+    pdf.setFontSize(9);
+    pdf.setFont("helvetica", "normal");
+    pdf.text(`Nome: ${clienteNome}`, 20, posY);
+    posY += 4;
+    pdf.text(`CPF/CNPJ: ${clienteDoc}`, 20, posY);
+    posY += 4;
+    pdf.text(`Endereço: ${clienteEndereco}`, 20, posY);
+    posY += 4;
+    pdf.text(`Telefone: ${clienteTelefone}`, 20, posY);
+    posY += 6;
+    
+    // --- ITENS ---
+    pdf.setFontSize(11);
+    pdf.setFont("helvetica", "bold");
+    pdf.text("ITENS DA VENDA", 20, posY);
+    posY += 5;
+    
+    let posYTable = posY;
+    itensVenda.forEach((item, index) => {
+        if(posYTable > 250) {
+            pdf.addPage();
+            posYTable = 20;
         }
-        
-        // --- LOGIN ---
-        function checkLogin() {
-            const pass = document.getElementById('adminPass').value;
-            if(pass === CORRECT_PASSWORD) {
-                document.getElementById('loginScreen').classList.add('hidden');
-                document.getElementById('mainApp').classList.remove('hidden');
-                initApp();
-            } else {
-                document.getElementById('loginError').classList.remove('hidden');
-                setTimeout(() => document.getElementById('loginError').classList.add('hidden'), 2000);
+        pdf.setFontSize(9);
+        pdf.setFont("helvetica", "normal");
+        pdf.text(`Item ${index + 1}`, 25, posYTable);
+        pdf.text(`R$ ${formatCurrency(item.valor)}`, 180, posYTable, null, null, "right");
+        posYTable += 5;
+    });
+    posYTable += 5;
+    
+    // --- TOTAIS ---
+    pdf.setFontSize(10);
+    pdf.setFont("helvetica", "bold");
+    pdf.text(`TOTAL: R$ ${formatCurrency(totalGeral)}`, 105, posYTable, null, null, "center");
+    posYTable += 5;
+    pdf.text(`RECEBIDO: R$ ${formatCurrency(recebido)}`, 105, posYTable, null, null, "center");
+    posYTable += 5;
+    pdf.setTextColor(0, 150, 0);
+    pdf.text(`TROCO: R$ ${formatCurrency(troco >= 0 ? troco : 0)}`, 105, posYTable, null, null, "center");
+    posYTable += 5;
+    pdf.setTextColor(0, 0, 0);
+    pdf.text(`PAGAMENTO: ${tipoPagamento}`, 105, posYTable, null, null, "center");
+    posYTable += 8;
+    
+    // --- OBSERVAÇÕES ---
+    if(observacoes !== 'Nenhuma observação') {
+        pdf.setFontSize(10);
+        pdf.setFont("helvetica", "bold");
+        pdf.text("OBSERVAÇÕES:", 20, posYTable);
+        posYTable += 4;
+        pdf.setFontSize(9);
+        pdf.setFont("helvetica", "normal");
+        const obsLines = pdf.splitTextToSize(observacoes, 170);
+        obsLines.forEach(line => {
+            if(posYTable > 270) {
+                pdf.addPage();
+                posYTable = 20;
             }
-        }
-        
-        document.getElementById('adminPass')?.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') checkLogin();
+            pdf.text(line, 25, posYTable);
+            posYTable += 4;
         });
+    }
+    
+    return pdf.output('blob');
+}
+
+// --- GERAR E SALVAR PDF NA MEMÓRIA ---
+async function generatePDF() {
+    if(itensVenda.length === 0) {
+        showToast('Adicione pelo menos um item antes de gerar o PDF!', true);
+        return;
+    }
+    
+    try {
+        showToast('Gerando PDF...', false);
+        pdfBlob = await gerarPDFBlob();
+        const url = URL.createObjectURL(pdfBlob);
+        const link = document.createElement('a');
+        const dataAtual = new Date();
+        const fileName = `Extrato_Venda_${dataAtual.getTime()}.pdf`;
+        link.href = url;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        showToast('✅ PDF salvo com sucesso!', false);
+    } catch(error) {
+        console.error('Erro ao gerar PDF:', error);
+        showToast('Erro ao gerar o PDF!', true);
+    }
+}
+
+// --- ENVIAR PARA WHATSAPP ---
+async function enviarWhatsApp() {
+    if(itensVenda.length === 0) {
+        showToast('Adicione pelo menos um item antes de enviar!', true);
+        return;
+    }
+    
+    const telefoneCliente = document.getElementById('clienteTelefone').value;
+    if(!telefoneCliente) {
+        showToast('Por favor, informe o telefone do cliente!', true);
+        return;
+    }
+    
+    try {
+        showToast('Preparando envio...', false);
         
-        // --- APP LOGIC ---
-        function initApp() {
-            setCurrentDateTime();
-        }
+        // Gerar PDF
+        pdfBlob = await gerarPDFBlob();
         
-        function setCurrentDateTime() {
-            const now = new Date();
-            const options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' };
-            const dateStr = now.toLocaleString('pt-BR', options);
-            document.getElementById('headerDate').innerText = dateStr;
-        }
-        
-        function formatCurrency(value) {
-            return value.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-        }
-        
-        // Função principal de adicionar item
-        function adicionarItem() {
-            const inputValor = document.getElementById('novoValor');
-            const valor = parseFloat(inputValor.value);
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const base64 = e.target.result.split(',')[1];
+            const numeroWhatsApp = telefoneCliente.replace(/\D/g, '');
+            const numeroCompleto = numeroWhatsApp.length === 11 ? `55${numeroWhatsApp}` : numeroWhatsApp;
             
-            if(isNaN(valor) || valor <= 0) {
-                showToast('Digite um valor válido!', true);
-                return;
-            }
-            
-            itemCount++;
-            totalGeral += valor;
-            itensVenda.push({ id: itemCount, valor: valor });
-            
-            // Criar o elemento na lista
-            const lista = document.getElementById('itemsList');
-            const itemDiv = document.createElement('div');
-            itemDiv.className = "flex justify-between items-center bg-white border border-gray-200 rounded-lg p-4 shadow-sm";
-            itemDiv.id = `item-${itemCount}`;
-            itemDiv.innerHTML = `
-                <span class="font-medium text-gray-700">Item ${itemCount}</span>
-                <div class="flex items-center gap-4">
-                    <span class="font-bold text-lg">R$ ${formatCurrency(valor)}</span>
-                    <button onclick="removerItem(${itemCount}, ${valor})" class="bg-red-100 hover:bg-red-200 text-red-600 w-8 h-8 flex items-center justify-center rounded-full font-bold text-xl">✕</button>
-                </div>
-            `;
-            
-            lista.appendChild(itemDiv);
-            document.getElementById('valorTotal').innerText = "R$ " + formatCurrency(totalGeral);
-            inputValor.value = "";
-            inputValor.focus();
-        }
-        
-        // Permitir adicionar com a tecla Enter
-        document.getElementById('novoValor')?.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') adicionarItem();
-        });
-        
-        function removerItem(id, valor) {
-            const itemElement = document.getElementById(`item-${id}`);
-            if(itemElement) itemElement.remove();
-            totalGeral -= valor;
-            itensVenda = itensVenda.filter(item => item.id !== id);
-            document.getElementById('valorTotal').innerText = "R$ " + formatCurrency(totalGeral);
-            calcularTroco();
-        }
-        
-        function calcularTroco() {
-            const recebido = parseFloat(document.getElementById('valorRecebido').value) || 0;
-            const troco = recebido - totalGeral;
-            document.getElementById('valorTroco').innerText = "R$ " + formatCurrency(troco >= 0 ? troco : 0);
-        }
-        
-        // Função para gerar o PDF e retornar o blob
-        async function gerarPDFBlob() {
-            const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
-            
-            // Obter dados atuais
-            const dataAtual = new Date();
-            const dataStr = dataAtual.toLocaleDateString('pt-BR');
-            const horaStr = dataAtual.toLocaleTimeString('pt-BR');
-            const recebido = parseFloat(document.getElementById('valorRecebido').value) || 0;
-            const troco = recebido - totalGeral;
-            const tipoPagamento = document.getElementById('tipoPagamento').value;
-            
-            // Dados da empresa
-            const empresaNome = document.getElementById('empresaNome').value || 'Não informado';
-            const empresaEndereco = document.getElementById('empresaEndereco').value || 'Não informado';
-            const empresaDoc = document.getElementById('empresaDoc').value || 'Não informado';
-            const empresaTelefone = document.getElementById('empresaTelefone').value || 'Não informado';
-            
-            // Dados do vendedor
-            const vendedorNome = document.getElementById('vendedorNome').value || 'Não informado';
-            const vendedorDoc = document.getElementById('vendedorDoc').value || 'Não informado';
-            const vendedorTelefone = document.getElementById('vendedorTelefone').value || 'Não informado';
-            
-            // Dados do cliente
-            const clienteNome = document.getElementById('clienteNome').value || 'Não informado';
-            const clienteDoc = document.getElementById('clienteDoc').value || 'Não informado';
-            const clienteEndereco = document.getElementById('clienteEndereco').value || 'Não informado';
-            const clienteTelefone = document.getElementById('clienteTelefone').value || 'Não informado';
-            
-            // Observações
-            const observacoes = document.getElementById('observacoes').value || 'Nenhuma observação';
-            
-            // --- CABEÇALHO ---
-            pdf.setFontSize(20);
-            pdf.setTextColor(0, 100, 200);
-            pdf.setFont("helvetica", "bold");
-            pdf.text("EXTRATO DE VENDA", 105, 20, null, null, "center");
-            
-            pdf.setFontSize(9);
-            pdf.setTextColor(80, 80, 80);
-            pdf.setFont("helvetica", "normal");
-            pdf.text(`${dataStr} - ${horaStr}`, 105, 28, null, null, "center");
-            
-            let posY = 40;
-            
-            // --- INFORMAÇÕES DA EMPRESA ---
-            pdf.setFontSize(11);
-            pdf.setTextColor(0, 0, 0);
-            pdf.setFont("helvetica", "bold");
-            pdf.text("DADOS DA EMPRESA", 20, posY);
-            posY += 5;
-            
-            pdf.setFontSize(9);
-            pdf.setFont("helvetica", "normal");
-            pdf.text(`Nome: ${empresaNome}`, 20, posY);
-            posY += 4;
-            pdf.text(`Endereço: ${empresaEndereco}`, 20, posY);
-            posY += 4;
-            pdf.text(`CNPJ: ${empresaDoc}`, 20, posY);
-            posY += 4;
-            pdf.text(`Telefone: ${empresaTelefone}`, 20, posY);
-            posY += 6;
-            
-            // --- INFORMAÇÕES DO VENDEDOR ---
-            pdf.setFontSize(11);
-            pdf.setFont("helvetica", "bold");
-            pdf.text("DADOS DO VENDEDOR", 20, posY);
-            posY += 5;
-            
-            pdf.setFontSize(9);
-            pdf.setFont("helvetica", "normal");
-            pdf.text(`Nome: ${vendedorNome}`, 20, posY);
-            posY += 4;
-            pdf.text(`Registro: ${vendedorDoc}`, 20, posY);
-            posY += 4;
-            pdf.text(`Telefone: ${vendedorTelefone}`, 20, posY);
-            posY += 6;
-            
-            // --- INFORMAÇÕES DO CLIENTE ---
-            pdf.setFontSize(11);
-            pdf.setFont("helvetica", "bold");
-            pdf.text("DADOS DO CLIENTE", 20, posY);
-            posY += 5;
-            
-            pdf.setFontSize(9);
-            pdf.setFont("helvetica", "normal");
-            pdf.text(`Nome: ${clienteNome}`, 20, posY);
-            posY += 4;
-            pdf.text(`CPF/CNPJ: ${clienteDoc}`, 20, posY);
-            posY += 4;
-            pdf.text(`Endereço: ${clienteEndereco}`, 20, posY);
-            posY += 4;
-            pdf.text(`Telefone: ${clienteTelefone}`, 20, posY);
-            posY += 6;
-            
-            // --- ITENS ---
-            pdf.setFontSize(11);
-            pdf.setFont("helvetica", "bold");
-            pdf.text("ITENS DA VENDA", 20, posY);
-            posY += 5;
-            
-            let posYTable = posY;
+            // Criar mensagem de texto
+            let mensagem = `*🍕 NOTA DE VENDA - ${document.getElementById('empresaNome').value || 'Empresa'}*\n\n`;
+            mensagem += `*Cliente:* ${document.getElementById('clienteNome').value || 'Não informado'}\n`;
+            mensagem += `*Vendedor:* ${document.getElementById('vendedorNome').value || 'Não informado'}\n`;
+            mensagem += `*Data:* ${new Date().toLocaleString('pt-BR')}\n\n`;
+            mensagem += `*ITENS:*\n`;
             itensVenda.forEach((item, index) => {
-                if(posYTable > 250) {
-                    pdf.addPage();
-                    posYTable = 20;
-                }
-                pdf.setFontSize(9);
-                pdf.setFont("helvetica", "normal");
-                pdf.text(`Item ${index + 1}`, 25, posYTable);
-                pdf.text(`R$ ${formatCurrency(item.valor)}`, 180, posYTable, null, null, "right");
-                posYTable += 5;
+                mensagem += `${index + 1}º item: R$ ${formatCurrency(item.valor)}\n`;
             });
+            mensagem += `\n*TOTAL: R$ ${formatCurrency(totalGeral)}*\n`;
+            mensagem += `*Pagamento:* ${document.getElementById('tipoPagamento').value}\n`;
+            mensagem += `\n*Volte sempre!* 🎉`;
             
-            posYTable += 5;
+            const mensagemCodificada = encodeURIComponent(mensagem);
+            const linkWhatsApp = `https://wa.me/${numeroCompleto}?text=${mensagemCodificada}`;
             
-            // --- TOTAIS ---
-            pdf.setFontSize(10);
-            pdf.setFont("helvetica", "bold");
-            pdf.text(`TOTAL: R$ ${formatCurrency(totalGeral)}`, 105, posYTable, null, null, "center");
-            posYTable += 5;
-            pdf.text(`RECEBIDO: R$ ${formatCurrency(recebido)}`, 105, posYTable, null, null, "center");
-            posYTable += 5;
-            pdf.setTextColor(0, 150, 0);
-            pdf.text(`TROCO: R$ ${formatCurrency(troco >= 0 ? troco : 0)}`, 105, posYTable, null, null, "center");
-            posYTable += 5;
-            pdf.setTextColor(0, 0, 0);
-            pdf.text(`PAGAMENTO: ${tipoPagamento}`, 105, posYTable, null, null, "center");
-            posYTable += 8;
-            
-            // --- OBSERVAÇÕES ---
-            if(observacoes !== 'Nenhuma observação') {
-                pdf.setFontSize(10);
-                pdf.setFont("helvetica", "bold");
-                pdf.text("OBSERVAÇÕES:", 20, posYTable);
-                posYTable += 4;
-                pdf.setFontSize(9);
-                pdf.setFont("helvetica", "normal");
-                const obsLines = pdf.splitTextToSize(observacoes, 170);
-                obsLines.forEach(line => {
-                    if(posYTable > 270) {
-                        pdf.addPage();
-                        posYTable = 20;
-                    }
-                    pdf.text(line, 25, posYTable);
-                    posYTable += 4;
-                });
-            }
-            
-            return pdf.output('blob');
-        }
+            window.open(linkWhatsApp, '_blank');
+            showToast('📱 Redirecionando para o WhatsApp...', false);
+        };
         
-        // --- GERAR E SALVAR PDF NA MEMÓRIA ---
-        async function generatePDF() {
-            if(itensVenda.length === 0) {
-                showToast('Adicione pelo menos um item antes de gerar o PDF!', true);
-                return;
-            }
-            
-            try {
-                showToast('Gerando PDF...', false);
-                pdfBlob = await gerarPDFBlob();
-                const url = URL.createObjectURL(pdfBlob);
-                const link = document.createElement('a');
-                const dataAtual = new Date();
-                const fileName = `Extrato_Venda_${dataAtual.getTime()}.pdf`;
-                link.href = url;
-                link.download = fileName;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                URL.revokeObjectURL(url);
-                showToast('✅ PDF salvo com sucesso!', false);
-            } catch(error) {
-                console.error('Erro ao gerar PDF:', error);
-                showToast('Erro ao gerar o PDF!', true);
-            }
-        }
-        
-        // --- ENVIAR PARA WHATSAPP ---
-        async function enviarWhatsApp() {
-            if(itensVenda.length === 0) {
-                showToast('Adicione pelo menos um item antes de enviar!', true);
-                return;
-            }
-            
-            const telefoneCliente = document.getElementById('clienteTelefone').value;
-            if(!telefoneCliente) {
-                showToast('Por favor, informe o telefone do cliente!', true);
-                return;
-            }
-            
-            try {
-                showToast('Preparando envio...', false);
-                
-                // Gerar PDF
-                pdfBlob = await gerarPDFBlob();
-                const reader = new FileReader();
-                
-                reader.onload = function(e) {
-                    const base64 = e.target.result.split(',')[1];
-                    const numeroWhatsApp = telefoneCliente.replace(/\D/g, '');
-                    const numeroCompleto = numeroWhatsApp.length === 11 ? `55${numeroWhatsApp}` : numeroWhatsApp;
-                    
-                    // Criar mensagem de texto
-                    let mensagem = `*🍕 NOTA DE VENDA - ${document.getElementById('empresaNome').value || 'Empresa'}*\n\n`;
-                    mensagem += `*Cliente:* ${document.getElementById('clienteNome').value || 'Não informado'}\n`;
-                    mensagem += `*Vendedor:* ${document.getElementById('vendedorNome').value || 'Não informado'}\n`;
-                    mensagem += `*Data:* ${new Date().toLocaleString('pt-BR')}\n\n`;
-                    mensagem += `*ITENS:*\n`;
-                    itensVenda.forEach((item, index) => {
-                        mensagem += `${index + 1}º item: R$ ${formatCurrency(item.valor)}\n`;
-                    });
-                    mensagem += `\n*TOTAL: R$ ${formatCurrency(totalGeral)}*\n`;
-                    mensagem += `*Pagamento:* ${document.getElementById('tipoPagamento').value}\n`;
-                    mensagem += `\n*Volte sempre!* 🎉`;
-                    
-                    const mensagemCodificada = encodeURIComponent(mensagem);
-                    const linkWhatsApp = `https://wa.me/${numeroCompleto}?text=${mensagemCodificada}`;
-                    
-                    window.open(linkWhatsApp, '_blank');
-                    showToast('📱 Redirecionando para o WhatsApp...', false);
-                };
-                
-                reader.readAsDataURL(pdfBlob);
-            } catch(error) {
-                console.error('Erro ao enviar:', error);
-                showToast('Erro ao preparar o envio!', true);
-            }
-        }
-    </script>
-</body>
-</html>
+        reader.readAsDataURL(pdfBlob);
+    } catch(error) {
+        console.error('Erro ao enviar:', error);
+        showToast('Erro ao preparar o envio!', true);
+    }
+}
+
+// Iniciar aplicação
+initApp();
+</script>
+
+</body></html>
